@@ -41,5 +41,6 @@
     "workerd@1.20261117.1": true,
     "workerd@1.20261123.1": true,
     "sharp@0.35.5": true
-  }
+  },
+  "license": "MIT"
 }

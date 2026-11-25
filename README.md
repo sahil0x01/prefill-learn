@@ -343,6 +343,13 @@ The layout follows Algebrica: a top bar with a menu drawer, a centered hero, a n
 - Sprite icons from ASCII grids in `src/lib/sprites.ts`, rendered by `PixelIcon.astro`.
 - Motion uses `steps()` only, and reduced-motion settings are respected.
 
+## License
+
+- **Writing** (everything in `src/content/`) is [CC BY 4.0](LICENSE-CONTENT). Anyone can reuse it, even commercially, as long as they credit Prefill.
+- **Code** (everything else) is [MIT](LICENSE).
+
+By opening a pull request, you agree your contribution is released under the same licenses.
+
 ## Adding server features later
 
 Every page is prerendered. For comments, feedback or search, add a route with `export const prerender = false`, plus the binding it needs (D1, KV) in `wrangler.jsonc`.

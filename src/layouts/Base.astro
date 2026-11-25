@@ -118,6 +118,10 @@ const paths = await getCollection('paths');
           Made by <a class="link" href={ORG_URL}>Prefill</a>. Open source on <a class="link" href={REPO_URL}>GitHub</a>,
           so if you spot a mistake you can fix it.
         </p>
+        <p class="muted license">
+          Writing is <a class="link" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>, code is
+          <a class="link" href={`${REPO_URL}/blob/main/LICENSE`}>MIT</a>. Reuse anything, just credit Prefill.
+        </p>
       </div>
     </footer>
 
@@ -305,6 +309,7 @@ const paths = await getCollection('paths');
 
   main { padding-top: 3.5rem; }
   .site-footer { margin-top: 6rem; padding-bottom: 3rem; font-size: 0.8125rem; }
+  .site-footer .license { margin-top: 0.4rem; font-size: 0.75rem; }
   .site-footer__links { display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem; margin-bottom: 0.75rem; }
   .site-footer__links a { text-decoration: none; font-weight: 550; }
   .site-footer__links a:hover { background: var(--nf-sun); color: var(--nf-sun-fg); }
