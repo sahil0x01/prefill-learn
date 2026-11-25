@@ -1,0 +1,53 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import PixelIcon from '../../components/PixelIcon.astro';
+
+const paths = await getCollection('paths');
+---
+
+<Base title="Paths">
+  <header class="page-head">
+    <span class="nf-label eyebrow"><PixelIcon name="path" size={1} /> Explore</span>
+    <h1 class="h1">Paths</h1>
+    <p class="lead">Notes worth reading in order.</p>
+  </header>
+  {paths.length === 0 && <p class="empty nf-pixel-inset">No paths yet.</p>}
+  <ol class="plist">
+    {paths.map((p, i) => (
+      <li>
+        <a href={`/paths/${p.id}/`} class="prow">
+          <span class="prow__num">{i + 1}</span>
+          <span>
+            <span class="prow__title">{p.data.title}</span>
+            <span class="prow__sum">{p.data.summary}</span>
+          </span>
+          <span class="nf-label">{p.data.steps.length} steps</span>
+        </a>
+      </li>
+    ))}
+  </ol>
+</Base>
+
+<style>
+  .page-head { text-align: center; margin-bottom: 2.5rem; }
+  .eyebrow { display: inline-flex; gap: 0.5rem; align-items: center; margin-bottom: 1.75rem; }
+  .lead { margin: 1rem auto 0; max-width: 32rem; }
+  .empty { margin: 0; padding: 1.25rem; text-align: center; font-size: 0.875rem; color: var(--nf-fg-muted); background: var(--nf-surface); }
+  .plist { list-style: none; padding: 0; margin: 0; }
+  .prow {
+    display: grid;
+    grid-template-columns: 2.25rem 1fr auto;
+    gap: 0 1rem;
+    align-items: baseline;
+    padding: 0.85rem 0.5rem;
+    margin: 0 -0.5rem;
+    text-decoration: none;
+  }
+  .plist li { border-bottom: var(--nf-px) solid var(--nf-border); }
+  .prow__num { font-size: 0.75rem; color: var(--nf-fg-subtle); }
+  .prow__title { font-weight: 600; }
+  .prow__sum { display: block; color: var(--nf-fg-muted); font-size: 0.875rem; margin-top: 0.15rem; }
+  .prow:hover { background: var(--nf-surface-2); }
+  .prow:hover .prow__title { background: var(--nf-sun); color: var(--nf-sun-fg); }
+</style>

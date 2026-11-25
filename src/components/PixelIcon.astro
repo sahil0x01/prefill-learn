@@ -1,0 +1,37 @@
+---
+import { sprites, type SpriteName } from '../lib/sprites';
+
+interface Props {
+  name: SpriteName;
+  /** CSS px per sprite pixel */
+  size?: number;
+  title?: string;
+  class?: string;
+}
+const { name, size = 2, title, class: cls } = Astro.props;
+const grid: readonly string[] = sprites[name];
+const w = grid[0].length;
+const h = grid.length;
+const fill = { '#': 'currentColor', o: 'var(--nf-ink)', w: 'var(--nf-bevel-light)' } as Record<string, string>;
+// One path per fill color keeps the markup small.
+const paths: Record<string, string> = {};
+grid.forEach((row, y) =>
+  [...row].forEach((c, x) => {
+    if (c === '.') return;
+    paths[c] = (paths[c] ?? '') + `M${x} ${y}h1v1h-1z`;
+  }),
+);
+---
+
+<svg
+  viewBox={`0 0 ${w} ${h}`}
+  width={w * size}
+  height={h * size}
+  shape-rendering="crispEdges"
+  class:list={['px-icon', cls]}
+  role={title ? 'img' : undefined}
+  aria-hidden={title ? undefined : 'true'}
+>
+  {title && <title>{title}</title>}
+  {Object.entries(paths).map(([c, d]) => <path d={d} fill={fill[c]} />)}
+</svg>

@@ -1,0 +1,62 @@
+---
+import PixelIcon from './PixelIcon.astro';
+import type { GraphNode } from '../lib/graph';
+import { KIND_LABEL } from '../lib/graph';
+import { KIND_SPRITE } from '../lib/sprites';
+
+interface Props {
+  items: GraphNode[];
+  /** Show a leading number column, like the index. */
+  numbered?: boolean;
+}
+const { items, numbered = false } = Astro.props;
+---
+
+{items.length === 0 && <p class="elist-empty nf-pixel-inset">Nothing here yet.</p>}
+
+<ol class:list={['elist', { 'elist--numbered': numbered }]}>
+  {items.map((n, i) => (
+    <li>
+      <a href={n.url} data-preview={n.id} class="erow">
+        {numbered && <span class="erow__num">{i + 1}</span>}
+        <span class="erow__body">
+          <span class="erow__title">{n.title}</span>
+          <span class="erow__sum">{n.summary}</span>
+        </span>
+        <span class="erow__kind nf-label">
+          {KIND_LABEL[n.kind]}
+          <PixelIcon name={KIND_SPRITE[n.kind]} size={1} />
+        </span>
+      </a>
+    </li>
+  ))}
+</ol>
+
+<style>
+  .elist-empty {
+    margin: 0;
+    padding: 1.25rem;
+    text-align: center;
+    font-size: 0.875rem;
+    color: var(--nf-fg-muted);
+    background: var(--nf-surface);
+  }
+  .elist { list-style: none; padding: 0; margin: 0; }
+  .elist li { border-bottom: var(--nf-px) solid var(--nf-border); }
+  .erow {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.25rem 1rem;
+    align-items: baseline;
+    padding: 0.75rem 0.5rem;
+    margin: 0 -0.5rem;
+    text-decoration: none;
+  }
+  .elist--numbered .erow { grid-template-columns: 2.25rem 1fr auto; }
+  .erow__num { font-size: 0.75rem; color: var(--nf-fg-subtle); font-variant-numeric: tabular-nums; }
+  .erow__title { font-weight: 600; letter-spacing: -0.01em; }
+  .erow__sum { display: block; color: var(--nf-fg-muted); font-size: 0.875rem; margin-top: 0.15rem; }
+  .erow__kind { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.625rem; }
+  .erow:hover { background: var(--nf-surface-2); }
+  .erow:hover .erow__title { background: var(--nf-sun); color: var(--nf-sun-fg); }
+</style>

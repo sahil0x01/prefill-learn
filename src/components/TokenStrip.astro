@@ -1,0 +1,71 @@
+---
+// Hero animation, in place of Algebrica's video: a pixel token strip.
+// Prefill fills the whole prompt in one frame; decode then adds one token
+// per tick, with the blinking cursor marking the next position.
+interface Props {
+  prompt?: number;
+  total?: number;
+}
+const { prompt = 40, total = 96 } = Astro.props;
+---
+
+<figure class="strip nf-pixel" data-prompt={prompt} data-total={total}>
+  <div class="strip__grid" aria-hidden="true">
+    {Array.from({ length: total }, (_, i) => <span class:list={['cell', i < prompt ? 'cell--prompt' : 'cell--out']}></span>)}
+  </div>
+  <figcaption class="strip__cap">
+    <span class="nf-label" data-phase>Prefill · all at once</span>
+    <span class="nf-label" data-count>0 / {total - prompt}</span>
+  </figcaption>
+</figure>
+
+<script>
+  for (const fig of document.querySelectorAll<HTMLElement>('.strip')) {
+    const prompt = Number(fig.dataset.prompt);
+    const total = Number(fig.dataset.total);
+    const cells = fig.querySelectorAll<HTMLElement>('.cell');
+    const phase = fig.querySelector<HTMLElement>('[data-phase]')!;
+    const count = fig.querySelector<HTMLElement>('[data-count]')!;
+    const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let t = 0;
+
+    const render = () => {
+      // t = 0..5: empty → prefill flash; then one decoded token per tick; hold; repeat.
+      const decoded = Math.max(0, Math.min(total - prompt, t - 6));
+      cells.forEach((c, i) => {
+        c.classList.toggle('on', i < prompt ? t >= 3 : i - prompt < decoded);
+        c.classList.toggle('next', i === prompt + decoded && t >= 3 && decoded < total - prompt);
+      });
+      phase.textContent = t < 6 ? 'Prefill · all at once' : 'Decode · one at a time';
+      count.textContent = `${decoded} / ${total - prompt}`;
+    };
+
+    if (still) {
+      t = 6 + total - prompt;
+      render();
+      continue;
+    }
+    render();
+    setInterval(() => {
+      t = t > 6 + (total - prompt) + 12 ? 0 : t + 1;
+      render();
+    }, 110);
+  }
+</script>
+
+<style>
+  .strip { margin: 0; padding: 1.25rem; background: var(--nf-surface); --nf-drop: 4px; }
+  .strip__grid {
+    display: grid;
+    grid-template-columns: repeat(24, 1fr);
+    gap: 4px;
+  }
+  .cell { aspect-ratio: 1; background: var(--nf-surface-2); }
+  .cell--prompt.on { background: var(--nf-ink); }
+  .cell--out.on { background: var(--nf-sun); box-shadow: inset 0 0 0 var(--nf-px) var(--nf-ink); }
+  .cell.next { background: var(--nf-ink); animation: nf-blink 0.5s steps(1, end) infinite; }
+  .strip__cap { display: flex; justify-content: space-between; gap: 1rem; margin-top: 1rem; flex-wrap: wrap; }
+  @media (max-width: 520px) {
+    .strip__grid { grid-template-columns: repeat(12, 1fr); }
+  }
+</style>

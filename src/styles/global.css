@@ -1,0 +1,151 @@
+/* Site layout, modeled on Algebrica's structure, drawn with nullfuse primitives. */
+@import './nullfuse.css';
+
+:root {
+  --measure: 42rem;
+  --gutter: 16px;
+  --header-h: 52px;
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
+body {
+  margin: 0;
+  background: var(--nf-bg);
+  color: var(--nf-fg);
+  font-size: 0.9375rem;
+  line-height: 1.6;
+}
+img, svg, canvas { image-rendering: pixelated; }
+::selection { background: var(--nf-sun); color: var(--nf-sun-fg); }
+:focus-visible { outline: 2px dashed var(--nf-ring); outline-offset: 3px; }
+a { color: inherit; }
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+
+.wrap { max-width: var(--measure); margin: 0 auto; padding: 0 var(--gutter); }
+.wrap--wide { max-width: 64rem; }
+.muted { color: var(--nf-fg-muted); }
+.px-icon { display: inline-block; flex-shrink: 0; vertical-align: middle; }
+
+/* ── headings ─────────────────────────────────────────── *
+ * Serif (EB Garamond) at regular weight, like Algebrica.   */
+.display, .h1, .h2, .prose h2 {
+  font-family: var(--font-serif);
+  font-weight: 450;
+  font-feature-settings: 'kern', 'liga', 'onum' 0;
+  margin: 0;
+}
+.display {
+  font-size: clamp(2.75rem, 1.4rem + 5.6vw, 4.75rem);
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+}
+.h1 {
+  font-size: clamp(2.25rem, 1.6rem + 2.4vw, 3.125rem);
+  line-height: 1.05;
+  letter-spacing: -0.015em;
+}
+.h2 {
+  font-size: clamp(1.625rem, 1.3rem + 1.2vw, 2.125rem);
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+/* The highlight band is tuned for Geist; nudge it for Garamond's lower x-height. */
+.display .nf-swash, .h1 .nf-swash { background-size: 100% 0.82em; background-position: 0 0.24em; padding: 0 0.1em; }
+.lead { font-size: 1.0625rem; line-height: 1.55; color: var(--nf-fg-muted); }
+
+/* ── links ────────────────────────────────────────────── */
+.prose a, .link {
+  text-decoration: underline;
+  text-decoration-thickness: var(--nf-px);
+  text-underline-offset: 3px;
+  text-decoration-color: var(--nf-border);
+}
+.prose a:hover, .link:hover { background: var(--nf-sun); color: var(--nf-sun-fg); text-decoration-color: var(--nf-sun-fg); }
+.prose a.wikilink { text-decoration-style: dotted; text-decoration-color: var(--nf-fg-subtle); }
+
+/* ── prose (article body) ─────────────────────────────── */
+.prose { font-size: 1.0625rem; line-height: 1.72; }
+.prose > :first-child { margin-top: 0; }
+.prose p { margin: 0 0 1.15em; }
+@media (min-width: 640px) {
+  .prose p { text-align: justify; hyphens: auto; -webkit-hyphens: auto; }
+}
+.prose h2 {
+  font-size: 1.75rem;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+  margin: 2.2em 0 0.6em;
+}
+.prose h3 { font-size: 1.0625rem; font-weight: 600; margin: 2em 0 0.5em; }
+.prose ul, .prose ol { padding-left: 1.25em; margin: 0 0 1.15em; }
+.prose li { margin: 0.25em 0; }
+.prose ul { list-style: square; }
+.prose strong { font-weight: 650; }
+.prose blockquote {
+  margin: 1.75em 0;
+  padding: 0.9rem 1.1rem;
+  background: var(--nf-surface-2);
+  border: 0;
+  border-left: calc(var(--nf-px) * 2) solid var(--nf-ink);
+  font-size: 0.975rem;
+}
+.prose blockquote p { margin: 0; text-align: left; }
+.prose :not(pre) > code {
+  font-family: var(--font-label);
+  font-size: 0.82em;
+  padding: 0.15em 0.4em;
+  background: var(--nf-surface-2);
+}
+.prose pre {
+  font-family: var(--font-label);
+  font-size: 0.85rem;
+  padding: 1rem;
+  overflow-x: auto;
+  background: var(--nf-surface) !important;
+  margin: 1.5em 0;
+}
+.prose table { border-collapse: collapse; width: 100%; font-size: 0.9rem; margin: 1.5em 0; }
+.prose th, .prose td { border-bottom: var(--nf-px) solid var(--nf-border); padding: 0.45rem 0.6rem; text-align: left; }
+.prose th { font-family: var(--font-label); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--nf-fg-subtle); border-bottom-color: var(--nf-ink); }
+.katex { font-size: 1.08em; }
+.katex-display { overflow-x: auto; overflow-y: hidden; padding: 0.4rem 0; margin: 1.5em 0; }
+
+/* ── separators ───────────────────────────────────────── */
+.rule { height: var(--nf-px); background: var(--nf-border); border: 0; margin: 3rem 0; }
+
+/* ── buttons ──────────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  background: var(--nf-surface);
+  color: var(--nf-fg);
+  font-size: 0.8125rem;
+  font-weight: 550;
+  line-height: 1.25;
+  text-decoration: none;
+  text-align: center;
+  transition: transform var(--nf-dur-instant) steps(2, end);
+}
+.btn--primary { background: var(--nf-accent); color: var(--nf-accent-fg); }
+
+/* ── hover preview ────────────────────────────────────── */
+#preview {
+  position: absolute;
+  z-index: 50;
+  max-width: 20rem;
+  pointer-events: none;
+  background: var(--nf-surface);
+  --nf-drop: 4px;
+  padding: 0.75rem 0.9rem;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  visibility: hidden;
+}
+#preview.is-on { visibility: visible; animation: nf-pop-in var(--nf-dur-fast) steps(3, end) both; }
+#preview .nf-label { display: flex; align-items: center; gap: 0.4rem; }
+#preview strong { display: block; font-size: 0.9375rem; font-weight: 650; letter-spacing: -0.01em; margin: 0.45rem 0 0.25rem; }
+#preview span.sum { color: var(--nf-fg-muted); }

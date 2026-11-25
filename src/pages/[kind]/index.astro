@@ -1,0 +1,38 @@
+---
+import Base from '../../layouts/Base.astro';
+import EntryList from '../../components/EntryList.astro';
+import PixelIcon from '../../components/PixelIcon.astro';
+import { getGraph, KINDS, type Kind } from '../../lib/graph';
+import { KIND_SPRITE } from '../../lib/sprites';
+
+export function getStaticPaths() {
+  return KINDS.map((kind) => ({ params: { kind } }));
+}
+
+const kind = Astro.params.kind as Kind;
+const copy: Record<Kind, [string, string]> = {
+  notes: ['Notes', 'Each note covers one thing.'],
+  widgets: ['Widgets', 'Small calculators you can play with.'],
+  projects: ['Projects', 'Things you can build yourself.'],
+};
+const [title, intro] = copy[kind];
+const { nodes } = await getGraph();
+const items = [...nodes.values()].filter((n) => n.kind === kind).sort((a, b) => a.title.localeCompare(b.title));
+---
+
+<Base title={title}>
+  <header class="page-head">
+    <span class="nf-label eyebrow"><PixelIcon name={KIND_SPRITE[kind]} size={1} /> Explore</span>
+    <h1 class="h1">{title}</h1>
+    <p class="lead">{intro}</p>
+    {items.length > 0 && <p class="count muted">{items.length}</p>}
+  </header>
+  <EntryList items={items} />
+</Base>
+
+<style>
+  .page-head { text-align: center; margin-bottom: 2.5rem; }
+  .eyebrow { display: inline-flex; gap: 0.5rem; align-items: center; margin-bottom: 1.75rem; }
+  .lead { margin: 1rem auto 0; max-width: 32rem; }
+  .count { font-size: 0.8125rem; margin: 1rem 0 0; }
+</style>

@@ -1,0 +1,120 @@
+/* Shared widget chrome, in nullfuse pixel style. */
+.widget {
+  --nf-drop: 4px;
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  background: var(--nf-surface);
+  margin: 2rem 0;
+  text-align: left;
+}
+.widget__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.6rem 0.9rem;
+  border-bottom: var(--nf-px) solid var(--nf-ink);
+  background: var(--nf-surface-2);
+}
+.widget__body { display: grid; gap: 1.5rem; padding: 1.1rem; }
+@media (min-width: 720px) {
+  .widget__body { grid-template-columns: 1fr 1.1fr; }
+}
+.widget__controls { display: grid; gap: 1rem; align-content: start; }
+.widget label { display: grid; gap: 0.45rem; }
+.widget label > .nf-label { display: flex; justify-content: space-between; }
+.widget output { color: var(--nf-fg); font-family: var(--font-label); font-variant-numeric: tabular-nums; }
+
+.widget select {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 100%;
+  font: inherit;
+  color: var(--nf-fg);
+  background: var(--nf-bg);
+  padding: 0.5rem 2rem 0.5rem 0.65rem;
+  border: 0;
+  border-radius: 0;
+  box-shadow:
+    -2px 0 0 0 var(--nf-ink), 2px 0 0 0 var(--nf-ink),
+    0 -2px 0 0 var(--nf-ink), 0 2px 0 0 var(--nf-ink);
+  background-image:
+    linear-gradient(var(--nf-ink), var(--nf-ink)),
+    linear-gradient(var(--nf-ink), var(--nf-ink)),
+    linear-gradient(var(--nf-ink), var(--nf-ink));
+  background-size: 10px 2px, 6px 2px, 2px 2px;
+  background-position: right 12px top 50%, right 14px top calc(50% + 2px), right 16px top calc(50% + 4px);
+  background-repeat: no-repeat;
+  margin: 2px;
+  cursor: pointer;
+}
+
+.widget input[type='range'] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 18px;
+  background: transparent;
+  margin: 0;
+  cursor: pointer;
+}
+.widget input[type='range']::-webkit-slider-runnable-track { height: 4px; background: var(--nf-ink); }
+.widget input[type='range']::-moz-range-track { height: 4px; background: var(--nf-ink); }
+.widget input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 18px;
+  margin-top: -7px;
+  background: var(--nf-sun);
+  border-radius: 0;
+  box-shadow: inset 0 0 0 2px var(--nf-ink);
+}
+.widget input[type='range']::-moz-range-thumb {
+  width: 14px;
+  height: 18px;
+  background: var(--nf-sun);
+  border: 2px solid var(--nf-ink);
+  border-radius: 0;
+}
+
+.widget__stats { margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+.widget__stats > div { background: var(--nf-bg); padding: 0.7rem 0.8rem; }
+.widget__stats dt { margin-bottom: 0.4rem; }
+.widget__stats dd {
+  margin: 0;
+  font-size: 1.375rem;
+  font-weight: 650;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+.widget .mem { margin-top: 1.25rem; }
+.widget .mem__bar {
+  display: grid;
+  grid-template-columns: repeat(40, 1fr);
+  gap: 2px;
+  padding: 4px;
+  background: var(--nf-bg);
+  margin-top: 0.5rem;
+}
+.widget .mem__cell { height: 14px; background: var(--nf-surface-2); }
+.widget .mem__cell--w { background: var(--nf-ink); }
+.widget .mem__cell--kv { background: var(--nf-sun); box-shadow: inset 0 0 0 1px var(--nf-ink); }
+.widget .mem__cell--over { background: var(--nf-danger); }
+.widget__legend { display: flex; flex-wrap: wrap; gap: 0.4rem 1rem; margin-top: 0.6rem; }
+.widget__legend span { display: inline-flex; align-items: center; gap: 0.4rem; }
+.widget .sw { width: 9px; height: 9px; display: inline-block; box-shadow: 0 0 0 1px var(--nf-ink); }
+.widget .sw--w { background: var(--nf-ink); }
+.widget .sw--kv { background: var(--nf-sun); }
+.widget .verdict {
+  margin: 1.1rem 0 0;
+  padding: 0.65rem 0.8rem;
+  font-weight: 600;
+  display: flex;
+  gap: 0.6rem;
+  align-items: baseline;
+}
+.widget .verdict--ok { background: var(--nf-bg); }
+.widget .verdict--bad { background: var(--nf-danger); color: var(--nf-bg); }
+.widget .verdict__tag { font-family: var(--font-label); font-size: 0.6875rem; letter-spacing: 0.06em; }
+.widget__note { color: var(--nf-fg-subtle); font-size: 0.75rem; margin: 0.75rem 0 0; }

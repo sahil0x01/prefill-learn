@@ -1,0 +1,117 @@
+---
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import EntryList from '../../components/EntryList.astro';
+import TopicIndex from '../../components/TopicIndex.astro';
+import PixelIcon from '../../components/PixelIcon.astro';
+import { getGraph, outgoing, backlinks, KIND_LABEL, type Entry } from '../../lib/graph';
+import { KIND_SPRITE } from '../../lib/sprites';
+import { topicTitle } from '../../data/topics';
+
+export async function getStaticPaths() {
+  const { entries } = await getGraph();
+  return [...entries.values()].map((entry) => ({
+    params: { kind: entry.collection, id: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props as { entry: Entry };
+const { Content } = await render(entry);
+const { requires, related } = await outgoing(entry.id);
+const linkedFrom = await backlinks(entry.id);
+const { data } = entry;
+const words = (entry.body ?? '').split(/\s+/).filter(Boolean).length;
+const minutes = Math.max(1, Math.round(words / 220));
+const fmt = (d: Date) => d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: '2-digit' });
+---
+
+<Base title={data.title} description={data.summary} wide={entry.collection === 'widgets'}>
+  <article class:list={['entry', `entry--${entry.collection}`]}>
+    <header class="entry__head">
+      <a href={`/${entry.collection}/`} class="nf-label entry__eyebrow">
+        <PixelIcon name={KIND_SPRITE[entry.collection]} size={1} />
+        {KIND_LABEL[entry.collection]} · {topicTitle(data.topic)}
+      </a>
+      <h1 class="h1">{data.title}</h1>
+      <p class="lead entry__lede">{data.summary}</p>
+      <p class="entry__meta">
+        {entry.collection === 'projects' && 'level' in data && <span>{data.level}</span>}
+        {entry.collection === 'projects' && 'time' in data && data.time && <span>{data.time}</span>}
+        {entry.collection !== 'widgets' && <span>{minutes} min read</span>}
+        {data.verified && <span title="Hardware and version-dependent numbers on this page were last checked on this date">Verified {fmt(data.verified)}</span>}
+        {data.tags.map((t) => <span class="tag">#{t}</span>)}
+      </p>
+      {requires.length > 0 && (
+        <nav class="requires nf-pixel-inset" aria-label="Prerequisites">
+          <span class="nf-label">Before this</span>
+          <span class="requires__list">
+            {requires.map((n) => (
+              <a href={n.url} data-preview={n.id} class="link">{n.title}</a>
+            ))}
+          </span>
+        </nav>
+      )}
+    </header>
+
+    <div class="prose">
+      <Content />
+    </div>
+
+    {(related.length > 0 || linkedFrom.length > 0) && (
+      <footer class="connections">
+        {related.length > 0 && (
+          <section>
+            <h2 class="nf-label">Related</h2>
+            <EntryList items={related} />
+          </section>
+        )}
+        {linkedFrom.length > 0 && (
+          <section>
+            <h2 class="nf-label">Linked from</h2>
+            <EntryList items={linkedFrom} />
+          </section>
+        )}
+      </footer>
+    )}
+  </article>
+
+  <aside class="chapter-nav" aria-label="Chapter index">
+    <hr class="rule" />
+    <TopicIndex current={entry.id} />
+  </aside>
+</Base>
+
+<style>
+  .entry--widgets .entry__head, .entry--widgets .connections, .entry--widgets ~ .chapter-nav { max-width: var(--measure); }
+  .entry__eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    margin-bottom: 2.75rem;
+  }
+  .entry__eyebrow:hover { color: var(--nf-fg); }
+  .entry__lede { margin: 1rem 0 0; }
+  .entry__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1.25rem;
+    margin: 1.25rem 0 0;
+    font-size: 0.8125rem;
+    color: var(--nf-fg-muted);
+  }
+  .tag { font-family: var(--font-label); font-size: 0.75rem; }
+  .requires {
+    display: grid;
+    gap: 0.6rem;
+    margin: 1.75rem 0 0;
+    padding: 0.85rem 1rem;
+    background: var(--nf-surface);
+    font-size: 0.875rem;
+  }
+  .requires__list { display: flex; flex-wrap: wrap; gap: 0.35rem 1.1rem; font-weight: 550; }
+  .entry__head { margin-bottom: 3.5rem; }
+  .connections { margin-top: 4.5rem; display: grid; gap: 2.5rem; }
+  .connections h2 { margin: 0 0 0.5rem; }
+</style>

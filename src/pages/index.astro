@@ -1,0 +1,91 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import TokenStrip from '../components/TokenStrip.astro';
+import TopicIndex from '../components/TopicIndex.astro';
+import PixelIcon from '../components/PixelIcon.astro';
+import { getGraph } from '../lib/graph';
+
+const { nodes } = await getGraph();
+const count = (k: string) => [...nodes.values()].filter((n) => n.kind === k).length;
+const paths = await getCollection('paths');
+---
+
+<Base>
+  <section class="hero">
+    <h1 class="display">Every token <span class="nf-swash">counts</span></h1>
+    <p class="hero__sub muted">What we're learning about building with AI, mostly how to run models fast and cheap.</p>
+    <TokenStrip />
+  </section>
+
+  <p class="about">
+    This is where we keep our notes on AI engineering. Most of it is about inference, but we also write about GPUs, kernels, training,
+    fine-tuning, agents, and whatever else we run into along the way. There are short notes, a few calculators, and
+    some projects you can build yourself.
+  </p>
+
+  {paths.length > 0 && (
+    <section class="start">
+      <div class="segmented">
+        {paths.slice(0, 2).map((p, i) => (
+          <a href={`/paths/${p.id}/`} class:list={['btn nf-pixel nf-pressable', { 'btn--primary': i === 0 }]}>
+            <PixelIcon name="path" size={1} />
+            {p.data.title}
+          </a>
+        ))}
+        <a href="/graph/" class="btn nf-pixel nf-pressable">
+          <PixelIcon name="graph" size={1} />
+          Explore the graph
+        </a>
+      </div>
+      <p class="start__note muted">
+        New here? Start with a <a class="link" href="/paths/">path</a>.
+      </p>
+    </section>
+  )}
+
+  <hr class="rule" />
+
+  <section class="kb">
+    <h2 class="h1 kb__title">Everything so far</h2>
+    <p class="kb__meta muted">
+      <span>{count('notes')} notes</span>
+      <span>{count('widgets')} widgets</span>
+      <span>{count('projects')} projects</span>
+      {nodes.size > 0 && <button class="link" id="toggle-all" type="button">Collapse all</button>}
+    </p>
+    <TopicIndex />
+  </section>
+</Base>
+
+<script>
+  const btn = document.getElementById('toggle-all');
+  btn?.addEventListener('click', () => {
+    const all = [...document.querySelectorAll<HTMLDetailsElement>('.kb details')];
+    const open = all.some((d) => d.open);
+    all.forEach((d) => (d.open = !open));
+    btn.textContent = open ? 'Expand all' : 'Collapse all';
+  });
+</script>
+
+<style>
+  .hero { text-align: center; }
+  .hero .display { margin-top: 1rem; }
+  .hero__sub { margin: 1.25rem auto 2.5rem; font-size: 0.9375rem; line-height: 1.55; }
+  .about { max-width: 34rem; margin: 2.5rem auto 0; text-align: center; font-size: 0.9375rem; line-height: 1.65; color: var(--nf-fg-muted); }
+  .start { text-align: center; margin-top: 2.5rem; }
+  .segmented { display: inline-flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+  .start__note { font-size: 0.8125rem; margin: 1.5rem 0 0; }
+  .kb__title { text-align: center; }
+  .kb__meta {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.25rem 0;
+    font-size: 0.8125rem;
+    margin: 0.75rem 0 1rem;
+  }
+  .kb__meta > * { padding: 0 0.75rem; }
+  .kb__meta > * + * { border-left: var(--nf-px) solid var(--nf-border); }
+  .kb__meta .link { color: var(--nf-fg); }
+</style>

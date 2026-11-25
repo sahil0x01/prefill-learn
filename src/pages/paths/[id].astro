@@ -1,0 +1,104 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import PixelIcon from '../../components/PixelIcon.astro';
+import { resolve, KIND_LABEL } from '../../lib/graph';
+import { KIND_SPRITE } from '../../lib/sprites';
+
+export async function getStaticPaths() {
+  const paths = await getCollection('paths');
+  return paths.map((path) => ({ params: { id: path.id }, props: { path } }));
+}
+
+const { path } = Astro.props as { path: CollectionEntry<'paths'> };
+const steps = await Promise.all(
+  path.data.steps.map((id) =>
+    resolve(id).catch(() => {
+      throw new Error(`Path "${path.id}" has a step "${id}" that doesn't match any note, widget or project`);
+    }),
+  ),
+);
+---
+
+<Base title={path.data.title} description={path.data.summary}>
+  <header class="head">
+    <a href="/paths/" class="nf-label eyebrow"><PixelIcon name="path" size={1} /> Path · {steps.length} steps</a>
+    <h1 class="h1">{path.data.title}</h1>
+    <p class="lead">{path.data.summary}</p>
+    <div class="progress" aria-live="polite">
+      <div class="progress__bar nf-pixel-inset" role="progressbar" aria-valuemin="0" aria-valuemax={steps.length} aria-valuenow="0">
+        {steps.map(() => <span class="seg"></span>)}
+      </div>
+      <span class="nf-label progress__text">0 of {steps.length} visited</span>
+    </div>
+  </header>
+
+  <ol class="steps">
+    {steps.map((n, i) => (
+      <li data-url={n.url}>
+        <a href={n.url} data-preview={n.id} class="step">
+          <span class="step__num nf-pixel-flat">{i + 1}</span>
+          <span>
+            <span class="step__kind nf-label"><PixelIcon name={KIND_SPRITE[n.kind]} size={1} /> {KIND_LABEL[n.kind]}</span>
+            <span class="step__title">{n.title}</span>
+            <span class="step__sum">{n.summary}</span>
+          </span>
+        </a>
+      </li>
+    ))}
+  </ol>
+</Base>
+
+<script>
+  try {
+    const visited = new Set<string>(JSON.parse(localStorage.getItem('prefill:visited') ?? '[]'));
+    const items = [...document.querySelectorAll<HTMLLIElement>('.steps li')];
+    const segs = document.querySelectorAll<HTMLElement>('.seg');
+    let done = 0;
+    items.forEach((li, i) => {
+      if (visited.has(li.dataset.url!)) {
+        li.classList.add('is-done');
+        segs[i].classList.add('on');
+        done++;
+      }
+    });
+    document.querySelector('.progress__text')!.textContent = `${done} of ${items.length} visited`;
+    document.querySelector('.progress__bar')!.setAttribute('aria-valuenow', String(done));
+  } catch {}
+</script>
+
+<style>
+  .eyebrow { display: inline-flex; gap: 0.5rem; align-items: center; text-decoration: none; margin-bottom: 2.75rem; }
+  .lead { margin: 1rem 0 0; }
+  .head { margin-bottom: 2.5rem; }
+  .progress { display: flex; align-items: center; gap: 1rem; margin-top: 1.75rem; }
+  .progress__bar { flex: 1; display: flex; gap: 3px; padding: 4px; background: var(--nf-surface); }
+  .seg { flex: 1; height: 10px; background: var(--nf-surface-2); }
+  .seg:global(.on) { background: var(--nf-ink); }
+  .steps { list-style: none; padding: 0; margin: 0; }
+  .steps li { border-bottom: var(--nf-px) solid var(--nf-border); }
+  .step {
+    display: grid;
+    grid-template-columns: 2rem 1fr;
+    gap: 1rem;
+    padding: 1rem 0.5rem;
+    margin: 0 -0.5rem;
+    text-decoration: none;
+  }
+  .step__num {
+    width: 28px;
+    height: 28px;
+    display: grid;
+    place-items: center;
+    font-family: var(--font-label);
+    font-size: 0.75rem;
+    background: var(--nf-surface);
+    margin-top: 2px;
+  }
+  li:global(.is-done) .step__num { background: var(--nf-ink); color: var(--nf-bg); }
+  .step__kind { display: flex; align-items: center; gap: 0.4rem; font-size: 0.625rem; margin-bottom: 0.4rem; }
+  .step__title { display: block; font-weight: 600; letter-spacing: -0.01em; }
+  .step__sum { display: block; color: var(--nf-fg-muted); font-size: 0.875rem; margin-top: 0.15rem; }
+  .step:hover { background: var(--nf-surface-2); }
+  .step:hover .step__title { background: var(--nf-sun); color: var(--nf-sun-fg); }
+</style>

@@ -1,0 +1,41 @@
+---
+import Base from '../layouts/Base.astro';
+import GraphView from '../components/GraphView';
+import PixelIcon from '../components/PixelIcon.astro';
+import { getGraph } from '../lib/graph';
+
+const { nodes, edges } = await getGraph();
+const data = {
+  nodes: [...nodes.values()].map(({ id, kind, title, url }) => ({ id, kind, title, url })),
+  edges: edges.map(({ from, to, type }) => ({ source: from, target: to, type })),
+};
+---
+
+<Base title="The Graph" wide>
+  <header class="page-head">
+    <span class="nf-label eyebrow"><PixelIcon name="graph" size={1} /> Explore</span>
+    <h1 class="h1">The Graph</h1>
+    <p class="lead">
+      Every note and how they link up. An arrow means read that one first.
+    </p>
+    <p class="nf-label legend">
+      <span><i class="k k--notes"></i> Note</span>
+      <span><i class="k k--widgets"></i> Widget</span>
+      <span><i class="k k--projects"></i> Project</span>
+      <span>{data.nodes.length} entries · {data.edges.length} links</span>
+    </p>
+  </header>
+  <GraphView client:only="preact" data={data} />
+</Base>
+
+<style>
+  .page-head { text-align: center; max-width: var(--measure); margin: 0 auto 2.5rem; }
+  .eyebrow { display: inline-flex; gap: 0.5rem; align-items: center; margin-bottom: 1.75rem; }
+  .lead { margin: 1rem auto 0; }
+  .legend { display: flex; justify-content: center; flex-wrap: wrap; gap: 0.5rem 1.5rem; margin-top: 1.5rem; }
+  .legend span { display: inline-flex; align-items: center; gap: 0.4rem; }
+  .k { width: 10px; height: 10px; display: inline-block; box-shadow: 0 0 0 2px var(--nf-ink); }
+  .k--notes { background: var(--nf-ink); }
+  .k--widgets { background: var(--nf-sun); }
+  .k--projects { background: var(--nf-surface); }
+</style>
