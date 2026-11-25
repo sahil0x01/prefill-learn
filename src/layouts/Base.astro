@@ -22,6 +22,7 @@ const {
 const fullTitle = title ? `${title} | Prefill Learn` : 'Prefill Learn';
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const ORG_URL = 'https://prefill.here';
+const REPO_URL = 'https://github.com/sahil0x01/prefill-learn';
 const browse = [
   ['/notes/', 'Notes', 'note'],
   ['/widgets/', 'Widgets', 'widget'],
@@ -93,8 +94,11 @@ const paths = await getCollection('paths');
         <ol class="history" id="history"></ol>
         <p class="history__empty muted" id="history-empty">Your recent pages will appear here. Start browsing.</p>
       </div>
+      <div class="drawer__section">
+        <a href={REPO_URL} class="drawer__link drawer__link--small">GitHub repository</a>
+      </div>
       <p class="drawer__foot muted">
-        Made by <a class="link" href={ORG_URL}>Prefill</a>.
+        Made by <a class="link" href={ORG_URL}>Prefill</a>. Open source on <a class="link" href={REPO_URL}>GitHub</a>.
       </p>
     </aside>
 
@@ -107,10 +111,12 @@ const paths = await getCollection('paths');
         <hr class="rule" />
         <nav class="site-footer__links">
           {browse.map(([href, label]) => <a href={href}>{label}</a>)}
+          <a href={REPO_URL}>GitHub</a>
           <a href={ORG_URL}>prefill.here</a>
         </nav>
         <p class="muted">
-          Made by <a class="link" href={ORG_URL}>Prefill</a>.
+          Made by <a class="link" href={ORG_URL}>Prefill</a>. Open source on <a class="link" href={REPO_URL}>GitHub</a>,
+          so if you spot a mistake you can fix it.
         </p>
       </div>
     </footer>

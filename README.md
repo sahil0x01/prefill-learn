@@ -2,6 +2,8 @@
 
 Prefill's open notebook on inference engineering, at **https://learn.prefill.here**: short notes, calculators and hands-on projects, all linked together. Built with Astro and served as static files from a Cloudflare Worker (`prefill-learn`).
 
+Source: https://github.com/sahil0x01/prefill-learn. Spotted a mistake? Open an issue or a pull request.
+
 ```bash
 npm install      # once
 npm run dev      # http://localhost:4321, reloads as you edit
