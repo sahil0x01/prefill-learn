@@ -17,11 +17,14 @@ The site starts empty. This guide walks you through adding each kind of content.
 
 ## Your first note in 4 steps
 
-**1. Pick or add a chapter.** Open `src/data/topics.ts`. Every entry belongs to one chapter in the numbered index on the home page. There's one to start with:
+**1. Pick or add a chapter.** Open `src/data/topics.ts`. Every entry belongs to one chapter in the numbered index on the home page. The chapters follow the roadmap, from the basics to research notes:
 
 ```ts
 export const topics = [
   { id: 'foundations', title: 'Foundations' },
+  { id: 'cpu-baseline', title: 'A naive engine on CPU' },
+  { id: 'cpu-performance', title: 'Making the CPU fast' },
+  // ...through 'research'
 ] as const;
 ```
 
